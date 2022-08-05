@@ -1,0 +1,8 @@
+# server sttings
+server:
+  port: 1323
+
+# mecab settings
+mecab:
+  dicts:
+    - /home/mkunten/dev/unidic/50a_kinsei-bungo/
