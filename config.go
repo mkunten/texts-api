@@ -12,6 +12,11 @@ type config struct {
 	Server struct {
 		Port string
 	}
+	Db struct {
+		Driver   string
+		Dsn      string
+		Datapath string
+	}
 	Mecab struct {
 		Dicts []string
 	}

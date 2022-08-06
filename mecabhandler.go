@@ -16,7 +16,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type Handler struct {
+type MecabHandler struct {
 	Mecab      *mecab.MeCab
 	Nodes      []MecabNode
 	NodeHeader []string
@@ -77,8 +77,8 @@ func (mn MecabNode) String() string {
 }
 
 // constructor
-func NewHandler(dicts []string) (h *Handler, err error) {
-	h = &Handler{}
+func NewMecabHandler(dicts []string) (h *MecabHandler, err error) {
+	h = &MecabHandler{}
 	h.Mecab, err = mecab.New(
 		fmt.Sprintf("-d %s", strings.Join(dicts, " ")))
 	if err != nil {
@@ -89,7 +89,7 @@ func NewHandler(dicts []string) (h *Handler, err error) {
 }
 
 // POST
-func (h *Handler) PostMecabConvert(c echo.Context) error {
+func (h *MecabHandler) PostMecabConvert(c echo.Context) error {
 	// read an uploaded file
 	file, err := c.FormFile("file")
 	if err != nil {
@@ -132,7 +132,7 @@ func (h *Handler) PostMecabConvert(c echo.Context) error {
 }
 
 // utililies
-func (h *Handler) ParseToNode(s string) error {
+func (h *MecabHandler) ParseToNode(s string) error {
 	tg, err := h.Mecab.NewTagger()
 	if err != nil {
 		return err
@@ -168,7 +168,7 @@ func (h *Handler) ParseToNode(s string) error {
 		if err := dec.Decode(&nf); err == io.EOF {
 			break
 		} else if err != nil {
-			return err
+			return fmt.Errorf("%s: %d: %+v", err, stat, features)
 		}
 
 		nodes = append(nodes, MecabNode{
@@ -188,7 +188,7 @@ func (h *Handler) ParseToNode(s string) error {
 	return nil
 }
 
-func (h *Handler) PrintNode() {
+func (h *MecabHandler) PrintNode() {
 	for _, node := range h.Nodes {
 		fmt.Println(node)
 	}

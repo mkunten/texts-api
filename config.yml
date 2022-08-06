@@ -2,6 +2,12 @@
 server:
   port: 1323
 
+# db settings
+db:
+  driver: postgres
+  dsn: user=textanalysis-api dbname=textanalysis-api password=textanalysis-api-pw sslmode=disable
+  datapath: ./data
+
 # mecab settings
 mecab:
   dicts:

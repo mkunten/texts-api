@@ -14,11 +14,16 @@ func main() {
 		panic(err)
 	}
 
-	h, err := NewHandler(cfg.Mecab.Dicts)
+	dbh, err := NewDbHandler(cfg)
 	if err != nil {
 		panic(err)
 	}
-	defer h.Mecab.Destroy()
+
+	mh, err := NewMecabHandler(cfg.Mecab.Dicts)
+	if err != nil {
+		panic(err)
+	}
+	defer mh.Mecab.Destroy()
 
 	e := echo.New()
 	e.Use(middleware.Logger())
@@ -26,11 +31,17 @@ func main() {
 	e.Use(middleware.CORS())
 	e.HTTPErrorHandler = ErrorHandler
 
+	// routes
 	api := e.Group("/api")
 
-	mecabApi := api.Group("/mecab")
+	// file
+	filesApi := api.Group("/files")
+	filesApi.GET("", dbh.GetFiles)
+	filesApi.POST("", dbh.PostFiles)
 
-	mecabApi.POST("/convert", h.PostMecabConvert)
+	// mecab
+	mecabApi := api.Group("/mecab")
+	mecabApi.POST("/convert", mh.PostMecabConvert)
 
 	e.Logger.Fatal(e.Start(":" + cfg.Server.Port))
 }
@@ -85,5 +96,6 @@ func ErrorHandler(err error, c echo.Context) {
 }
 
 func badRequest(c echo.Context, key string, err error) *Error {
+	c.Logger().Error(key, err)
 	return newHTTPError(http.StatusBadRequest, key, err.Error())
 }
