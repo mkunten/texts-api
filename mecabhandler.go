@@ -152,11 +152,18 @@ func (h *MecabHandler) ParseToNode(s string) error {
 			if node.Next() != nil {
 				break
 			}
+			continue
 		}
 
 		features := node.Feature()
 		if stat == int(MECAB_UNK_NODE) {
 			features += strings.Repeat(",", 21)
+		}
+		if stat == int(MECAB_NOR_NODE) && string(features[0:12]) == "補助記号" {
+			if node.Next() != nil {
+				break
+			}
+			continue
 		}
 
 		csvReader := csv.NewReader(strings.NewReader(features))

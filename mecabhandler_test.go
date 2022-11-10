@@ -15,13 +15,13 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-func createHandler() *Handler {
+func createHandler() *MecabHandler {
 	cfg, err := LoadConfig()
 	if err != nil {
 		panic(err)
 	}
 
-	h, err := NewHandler(cfg.Mecab.Dicts)
+	h, err := NewMecabHandler(cfg.Mecab.Dicts)
 	if err != nil {
 		panic(err)
 	}

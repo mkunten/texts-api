@@ -36,8 +36,13 @@ func main() {
 
 	// file
 	filesApi := api.Group("/files")
-	filesApi.GET("", dbh.GetFiles)
-	filesApi.POST("", dbh.PostFiles)
+	filesApi.GET("", dbh.GetAllFiles)
+	filesApi.POST("", dbh.CreateFile)
+	filesApi.GET("/:id", dbh.GetFile)
+	filesApi.PUT("/:id", dbh.UpdateFile)
+	filesApi.DELETE("/:id", dbh.DeleteFile)
+	filesApi.GET("/:id/xml", dbh.GetFileXML)
+	filesApi.GET("/xmlbyname/:name", dbh.GetFileXMLByName)
 
 	// mecab
 	mecabApi := api.Group("/mecab")
