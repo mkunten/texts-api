@@ -5,7 +5,7 @@ server:
 # db settings
 db:
   driver: postgres
-  dsn: user=textanalysis-api dbname=textanalysis-api password=textanalysis-api-pw sslmode=disable
+  dsn: user=texts-api dbname=texts-api password=texts-api-pw sslmode=disable
   datapath: ./data
 
 # mecab settings

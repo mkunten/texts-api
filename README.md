@@ -1,4 +1,4 @@
-# textanalysis-api
+# texts-api
 
 ## run
 

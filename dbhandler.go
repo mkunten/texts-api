@@ -52,7 +52,7 @@ func NewDbHandler(cfg *config) (dbh *DbHandler, err error) {
 	t.AddIndex("files_sha256_idx", "Btree", []string{"sha256"}).SetUnique(true)
 
 	dbh.DbMap.TraceOn("[gorp]",
-		log.New(os.Stdout, "textanalysis-api:", log.Lmicroseconds))
+		log.New(os.Stdout, "texts-api:", log.Lmicroseconds))
 
 	if err = dbh.DbMap.CreateTablesIfNotExists(); err != nil {
 		log.Fatal(err)

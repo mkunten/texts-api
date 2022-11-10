@@ -1,4 +1,4 @@
-module textanalysis-api
+module texts-api
 
 go 1.18
 
