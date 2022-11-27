@@ -46,9 +46,10 @@ func main() {
 
 	// jsonData
 	jsonDataApi := api.Group("/jsonData")
-	jsonDataApi.GET("/:key", dbh.GetJSONData)
-	jsonDataApi.POST("/:key", dbh.CreateJSONData)
-	jsonDataApi.DELETE("/:key", dbh.DeleteJSONData)
+	jsonDataApi.GET("", dbh.GetAllJSONData)
+	jsonDataApi.POST("", dbh.CreateJSONDatum)
+	jsonDataApi.GET("/:key", dbh.GetJSONDatum)
+	jsonDataApi.DELETE("/:key", dbh.DeleteJSONDatum)
 
 	// mecab
 	mecabApi := api.Group("/mecab")

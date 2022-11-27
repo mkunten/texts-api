@@ -9,56 +9,64 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type JSONData struct {
+type JSONDatum struct {
 	Key     string          `db:"key,primarykey" json:"key"`
 	Data    json.RawMessage `db:"data,notnull" json:"data"`
 	Updated time.Time       `db:"updated" json:"updated"`
 }
 
-var lockJSONData = sync.Mutex{}
+var lockJSONDatum = sync.Mutex{}
 
 // GET
-func (h *DbHandler) GetJSONData(c echo.Context) error {
+func (h *DbHandler) GetAllJSONData(c echo.Context) error {
+	var jsonData []JSONDatum
+	_, err := h.DbMap.Select(&jsonData,
+		"SELECT * FROM json_data ORDER BY updated")
+	if err != nil {
+		return badRequest(c, "selectjsondata", err)
+	}
+	return c.JSON(http.StatusOK, jsonData)
+}
+
+func (h *DbHandler) GetJSONDatum(c echo.Context) error {
 	key := c.Param("key")
-	obj, err := h.DbMap.Get(JSONData{}, key)
+	obj, err := h.DbMap.Get(JSONDatum{}, key)
 	if err != nil {
 		return badRequest(c, "getjsondata", err)
 	}
 	if obj == nil {
 		return notFound(c, "getjsondata", key)
 	}
-	return c.JSON(http.StatusOK, obj.(*JSONData))
+	return c.JSON(http.StatusOK, obj.(*JSONDatum))
 }
 
 // POST
-func (h *DbHandler) CreateJSONData(c echo.Context) error {
-	lockJSONData.Lock()
-	defer lockJSONData.Unlock()
+func (h *DbHandler) CreateJSONDatum(c echo.Context) error {
+	lockJSONDatum.Lock()
+	defer lockJSONDatum.Unlock()
 
-	jd := &JSONData{
-		Key:     c.Param("key"),
-		Updated: time.Now(),
-	}
+	jd := &JSONDatum{}
 	if err := c.Bind(jd); err != nil {
 		return badRequest(c, "bind", err)
 	}
+	jd.Updated = time.Now()
 
 	query := "INSERT INTO json_data (key, data, updated) VALUES ($1, $2, $3)"
 	if _, err := h.DbMap.Exec(query, jd.Key, jd.Data, jd.Updated); err != nil {
 		return badRequest(c, "insert", err)
 	}
-	c.Logger().Infof("added: jsonData: %s", jd.Key)
+	c.Logger().Infof("added: jsonDatum: %s", jd.Key)
 	return c.JSON(http.StatusCreated, jd)
 }
 
 // PUT
 
 // DELETE
-func (h *DbHandler) DeleteJSONData(c echo.Context) error {
-	lockJSONData.Lock()
-	defer lockJSONData.Unlock()
+func (h *DbHandler) DeleteJSONDatum(c echo.Context) error {
+	lockJSONDatum.Lock()
+	defer lockJSONDatum.Unlock()
 
-	jd := &JSONData{
+	jd := &JSONDatum{
 		Key: c.Param("key"),
 	}
 	count, err := h.DbMap.Delete(jd)
