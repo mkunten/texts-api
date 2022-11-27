@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"encoding/json"
 	"log"
 	"os"
 	"reflect"
@@ -27,11 +28,13 @@ func NewDbHandler(cfg *config) (dbh *DbHandler, err error) {
 
 	dbh.DbMap = &gorp.DbMap{
 		Db:      dbh.Db,
-		Dialect: gorp.PostgresDialect{},
+		Dialect: CustomPostgresDialect{},
 	}
 
 	t := dbh.DbMap.AddTableWithName(File{}, "files")
 	t.AddIndex("files_sha256_idx", "Btree", []string{"sha256"}).SetUnique(true)
+
+	t = dbh.DbMap.AddTableWithName(JSONData{}, "json_data")
 
 	dbh.DbMap.TraceOn("[gorp]",
 		log.New(os.Stdout, "texts-api:", log.Lmicroseconds))
@@ -52,4 +55,21 @@ func NewDbHandler(cfg *config) (dbh *DbHandler, err error) {
 	}
 
 	return dbh, err
+}
+
+// CustomPostgresDialect for gorp to manipulate json
+/*
+	original:
+	https://github.com/go-gorp/gorp/issues/254#issuecomment-248733253
+*/
+
+type CustomPostgresDialect struct {
+	gorp.PostgresDialect
+}
+
+func (d CustomPostgresDialect) ToSqlType(val reflect.Type, maxsize int, isAutoIncr bool) string {
+	if val == reflect.TypeOf((json.RawMessage)(nil)) {
+		return "jsonb"
+	}
+	return d.PostgresDialect.ToSqlType(val, maxsize, isAutoIncr)
 }

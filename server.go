@@ -44,6 +44,12 @@ func main() {
 	filesApi.GET("/:id/xml", dbh.GetFileXML)
 	filesApi.GET("/xmlbyname/:name", dbh.GetFileXMLByName)
 
+	// jsonData
+	jsonDataApi := api.Group("/jsonData")
+	jsonDataApi.GET("/:key", dbh.GetJSONData)
+	jsonDataApi.POST("/:key", dbh.CreateJSONData)
+	jsonDataApi.DELETE("/:key", dbh.DeleteJSONData)
+
 	// mecab
 	mecabApi := api.Group("/mecab")
 	mecabApi.POST("/convert", mh.PostMecabConvert)
