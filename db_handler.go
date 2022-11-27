@@ -4,10 +4,11 @@ import (
 	"database/sql"
 	"log"
 	"os"
+	"reflect"
 	"strings"
 
+	"github.com/go-gorp/gorp/v3"
 	_ "github.com/lib/pq"
-	"gopkg.in/gorp.v2"
 )
 
 type DbHandler struct {

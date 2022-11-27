@@ -101,6 +101,11 @@ func ErrorHandler(err error, c echo.Context) {
 }
 
 func badRequest(c echo.Context, key string, err error) *Error {
-	c.Logger().Error(key, err)
+	c.Logger().Errorf("%d:%s:%s", http.StatusBadRequest, key, err)
 	return newHTTPError(http.StatusBadRequest, key, err.Error())
+}
+
+func notFound(c echo.Context, key string, s string) *Error {
+	c.Logger().Errorf("%d:%s:%s not found", http.StatusNotFound, key, s)
+	return newHTTPError(http.StatusNotFound, key, s+" not found")
 }
