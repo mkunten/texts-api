@@ -12,8 +12,9 @@ import (
 
 type JSONDatum struct {
 	Key     string          `db:"key,notnull,primarykey" json:"key"`
-	Data    json.RawMessage `db:"data,notnull" json:"data"`
-	Updated time.Time       `db:"updated" json:"updated"`
+	Type    string          `db:"type,notnull" json:"type"`
+	Data    json.RawMessage `db:"data,notnull" json:"data,omitempty"`
+	Updated time.Time       `db:"updated,notnull" json:"updated"`
 }
 
 var lockJSONDatum = sync.Mutex{}
@@ -22,7 +23,7 @@ var lockJSONDatum = sync.Mutex{}
 func (h *DbHandler) GetAllJSONData(c echo.Context) error {
 	var jsonData []JSONDatum
 	_, err := h.DbMap.Select(&jsonData,
-		"SELECT * FROM json_data ORDER BY updated")
+		"SELECT key, type, updated FROM json_data ORDER BY updated")
 	if err != nil {
 		return badRequest(c, "selectjsondata", err)
 	}
@@ -55,9 +56,12 @@ func (h *DbHandler) CreateJSONDatum(c echo.Context) error {
 	if jd.Key == "" {
 		return badRequest(c, "bind", fmt.Errorf("key is empty"))
 	}
+	if jd.Type == "" {
+		return badRequest(c, "bind", fmt.Errorf("type is empty"))
+	}
 
-	query := "INSERT INTO json_data (key, data, updated) VALUES ($1, $2, $3)"
-	if _, err := h.DbMap.Exec(query, jd.Key, jd.Data, jd.Updated); err != nil {
+	query := "INSERT INTO json_data (key, type, data, updated) VALUES ($1, $2, $3, $4)"
+	if _, err := h.DbMap.Exec(query, jd.Key, jd.Type, jd.Data, jd.Updated); err != nil {
 		return badRequest(c, "insert", err)
 	}
 	c.Logger().Infof("added: jsonDatum: %s", jd.Key)
