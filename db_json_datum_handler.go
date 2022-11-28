@@ -11,7 +11,7 @@ import (
 )
 
 type JSONDatum struct {
-	Key     string          `db:"key,primarykey" json:"key"`
+	Key     string          `db:"key,notnull,primarykey" json:"key"`
 	Data    json.RawMessage `db:"data,notnull" json:"data"`
 	Updated time.Time       `db:"updated" json:"updated"`
 }
@@ -51,6 +51,10 @@ func (h *DbHandler) CreateJSONDatum(c echo.Context) error {
 		return badRequest(c, "bind", err)
 	}
 	jd.Updated = time.Now()
+
+	if jd.Key == "" {
+		return badRequest(c, "bind", fmt.Errorf("key is empty"))
+	}
 
 	query := "INSERT INTO json_data (key, data, updated) VALUES ($1, $2, $3)"
 	if _, err := h.DbMap.Exec(query, jd.Key, jd.Data, jd.Updated); err != nil {
