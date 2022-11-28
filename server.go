@@ -49,6 +49,7 @@ func main() {
 	jsonDataApi.GET("", dbh.GetAllJSONData)
 	jsonDataApi.POST("", dbh.CreateJSONDatum)
 	jsonDataApi.GET("/:key", dbh.GetJSONDatum)
+	jsonDataApi.PUT("/:key", dbh.UpdateJSONDatum)
 	jsonDataApi.DELETE("/:key", dbh.DeleteJSONDatum)
 
 	// mecab

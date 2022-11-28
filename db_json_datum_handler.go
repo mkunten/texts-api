@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"sync"
 	"time"
@@ -60,6 +61,32 @@ func (h *DbHandler) CreateJSONDatum(c echo.Context) error {
 }
 
 // PUT
+func (h *DbHandler) UpdateJSONDatum(c echo.Context) error {
+	lockJSONDatum.Lock()
+	defer lockJSONDatum.Unlock()
+
+	jd := &JSONDatum{
+		Key: c.Param("key"),
+	}
+	if err := c.Bind(&jd); err != nil {
+		return badRequest(c, "bind", err)
+	}
+	jd.Updated = time.Now()
+
+	// count, err := h.DbMap.Update(&jd)
+	query := "UPDATE json_data SET (data, updated) = ($1, $2) WHERE key = $3"
+	res, err := h.DbMap.Exec(query, jd.Data, jd.Updated, jd.Key)
+	if err != nil {
+		return badRequest(c, "update", err)
+	}
+	if count, _ := res.RowsAffected(); count != 1 {
+		return badRequest(c, "update",
+			fmt.Errorf("something wrong: update: %d", count))
+	}
+
+	c.Logger().Infof("updated: %s", jd.Key)
+	return c.JSON(http.StatusCreated, jd)
+}
 
 // DELETE
 func (h *DbHandler) DeleteJSONDatum(c echo.Context) error {

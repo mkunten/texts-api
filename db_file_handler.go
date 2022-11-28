@@ -89,7 +89,6 @@ func (h *DbHandler) CreateFile(c echo.Context) error {
 		return badRequest(c, "bind", err)
 	}
 	f.Updated = time.Now()
-	fmt.Printf("path: %+v\n", f)
 
 	if f.Path != "" {
 		if f.Path[0:7] != "http://" && f.Path[0:8] != "https://" {
@@ -161,7 +160,6 @@ func (h *DbHandler) SaveFile(src io.Reader) (hash string, err error) {
 	}
 	hash = fmt.Sprintf("%x", sha.Sum(nil))
 
-	fmt.Printf("rename: %s => %s", tmpfile.Name(), filepath.Join(h.Datapath, hash))
 	err = os.Rename(tmpfile.Name(), filepath.Join(h.Datapath, hash))
 	if err != nil {
 		return
@@ -170,6 +168,7 @@ func (h *DbHandler) SaveFile(src io.Reader) (hash string, err error) {
 	return
 }
 
+// PUT
 func (h *DbHandler) UpdateFile(c echo.Context) error {
 	lockFile.Lock()
 	defer lockFile.Unlock()
@@ -179,8 +178,6 @@ func (h *DbHandler) UpdateFile(c echo.Context) error {
 		return badRequest(c, "bind", err)
 	}
 	f.Updated = time.Now()
-
-	fmt.Printf("\nok: %+v\n", f)
 
 	count, err := h.DbMap.Update(&f)
 	if err != nil {
