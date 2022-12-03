@@ -39,6 +39,9 @@ func (h *DbHandler) GetJSONDatum(c echo.Context) error {
 	if obj == nil {
 		return notFound(c, "getjsondata", key)
 	}
+	if c.QueryParam("fmt") == "json" {
+		return c.JSON(http.StatusOK, obj.(*JSONDatum).Data)
+	}
 	return c.JSON(http.StatusOK, obj.(*JSONDatum))
 }
 

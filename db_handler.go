@@ -34,7 +34,7 @@ func NewDbHandler(cfg *config) (dbh *DbHandler, err error) {
 	t := dbh.DbMap.AddTableWithName(File{}, "files")
 	t.AddIndex("files_sha256_idx", "Btree", []string{"sha256"}).SetUnique(true)
 
-	t = dbh.DbMap.AddTableWithName(JSONDatum{}, "json_data")
+	dbh.DbMap.AddTableWithName(JSONDatum{}, "json_data")
 
 	dbh.DbMap.TraceOn("[gorp]",
 		log.New(os.Stdout, "texts-api:", log.Lmicroseconds))
