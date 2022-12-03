@@ -116,5 +116,5 @@ func (h *DbHandler) DeleteJSONDatum(c echo.Context) error {
 	}
 
 	c.Logger().Infof("deleted: %s", jd.Key)
-	return c.JSON(http.StatusOK, jd.Key)
+	return c.JSON(http.StatusOK, map[string]string{"key": jd.Key})
 }

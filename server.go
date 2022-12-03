@@ -52,6 +52,14 @@ func main() {
 	jsonDataApi.PUT("/:key", dbh.UpdateJSONDatum)
 	jsonDataApi.DELETE("/:key", dbh.DeleteJSONDatum)
 
+	// entities
+	entitiesApi := api.Group("/entities")
+	entitiesApi.GET("", dbh.GetAllEntities)
+	entitiesApi.POST("", dbh.CreateEntity)
+	entitiesApi.GET("/:id", dbh.GetEntity)
+	entitiesApi.PUT("/:id", dbh.UpdateEntity)
+	entitiesApi.DELETE("/:id", dbh.DeleteEntity)
+
 	// mecab
 	mecabApi := api.Group("/mecab")
 	mecabApi.POST("/convert", mh.PostMecabConvert)

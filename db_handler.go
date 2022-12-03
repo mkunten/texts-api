@@ -36,6 +36,12 @@ func NewDbHandler(cfg *config) (dbh *DbHandler, err error) {
 
 	dbh.DbMap.AddTableWithName(JSONDatum{}, "json_data")
 
+	dbh.DbMap.AddTableWithName(Entity{}, "entities")
+	t = dbh.DbMap.AddTableWithName(EntityAltLabel{}, "entities_alt_labels")
+	t.SetUniqueTogether("entity_id", "alt_label")
+	t = dbh.DbMap.AddTableWithName(EntityExactMatch{}, "entities_exact_matches")
+	t.SetUniqueTogether("entity_id", "exact_match")
+
 	dbh.DbMap.TraceOn("[gorp]",
 		log.New(os.Stdout, "texts-api:", log.Lmicroseconds))
 
